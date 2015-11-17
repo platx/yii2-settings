@@ -25,6 +25,12 @@ to the require section of your `composer.json` file.
 Usage
 -----
 
+First, you have to create migration, that creates table for settings.
+
+```php
+class m000000_000004_create_table_setting extends \platx\settings\CreateSettingTableMigration{}
+```
+
 For insert new settings, create migration, that extends from \platx\settings\SettingsMigration and implements parameter protected $_rows, like this:
 
 ```php
