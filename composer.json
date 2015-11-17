@@ -1,0 +1,21 @@
+{
+    "name": "platx/yii2-settings",
+    "description": "DB settings for Yii2",
+    "type": "yii2-extension",
+    "keywords": ["yii2","settings"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vladyslav Platonov",
+            "email": "vlad@plat-x.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "platx\\settings\\": ""
+        }
+    }
+}
