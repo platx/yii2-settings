@@ -42,7 +42,7 @@ class SettingAction extends Action
             }
         }
 
-        return Yii::$app->view->render('index', [
+        return $this->controller->render('index', [
             'settingForm' => $settingForm
         ]);
     }
