@@ -5,9 +5,12 @@ namespace platx\settings;
 
 use Yii;
 use yii\base\Exception;
+use yii\base\InvalidValueException;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
 use yii\helpers\Json;
+use yii\web\UploadedFile;
 
 
 /**
@@ -36,12 +39,18 @@ class Setting extends ActiveRecord
     const TYPE_CHECKBOX = 5;
     const TYPE_RADIO = 6;
     const TYPE_RADIOLIST = 7;
+    const TYPE_FILE = 8;
 
     /**
      * Cache key for saving settings in cache
      * @var string
      */
     private static $cacheKey = 'setting';
+
+    /**
+     * @var string|null|UploadedFile
+     */
+    private $_value;
 
     /**
      * @inheritdoc
@@ -73,6 +82,15 @@ class Setting extends ActiveRecord
         }
 
         return $rules;
+    }
+
+    public function beforeValidate()
+    {
+        if ($this->type_key == self::TYPE_FILE && $file = UploadedFile::getInstance(new SettingForm(), $this->key)) {
+            $this->_value = $file;
+        }
+
+        return parent::beforeValidate();
     }
 
     /**
@@ -113,6 +131,10 @@ class Setting extends ActiveRecord
     {
         $this->_autoIncrementPosition();
 
+        if ($this->type_key == self::TYPE_FILE) {
+            $this->_uploadFile();
+        }
+
         if (is_array($this->variants)) {
             $this->variants = Json::encode($this->variants);
         }
@@ -134,6 +156,29 @@ class Setting extends ActiveRecord
                 ->where(['section' => $this->section])
                 ->max("position");
             $this->position = !empty($maxPositionInSection) ? $maxPositionInSection + 1 : 1;
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function _uploadFile()
+    {
+        if (!($this->_value instanceof UploadedFile)) {
+            throw new InvalidValueException("Setting {$this->section}.{$this->key} must be a file!");
+        }
+        $fileName = "{$this->section}_{$this->key}_" . uniqid() . '.' . $this->_value->extension;
+
+        $url = "/uploads/settings/{$fileName}";
+        $path = Yii::getAlias("@frontend/web{$url}");
+
+        if (is_string($path) && FileHelper::createDirectory(dirname($path))) {
+            if ($this->_value instanceof UploadedFile) {
+                if ($this->_value->saveAs($path, true)) {
+                    $this->value = $url;
+                    unset($this->_value);
+                }
+            }
         }
     }
 
@@ -176,7 +221,7 @@ class Setting extends ActiveRecord
             if (!is_null($key)) {
                 $query->andWhere(['key' => $key]);
 
-                /** @var \common\models\Setting $model */
+                /** @var static $model */
                 $model = $query->one();
 
                 if (empty($model)) {

@@ -37,6 +37,7 @@ abstract class SettingsMigration extends Migration
     const TYPE_CHECKBOX = 5;
     const TYPE_RADIO = 6;
     const TYPE_RADIOLIST = 7;
+    const TYPE_FILE = 8;
 
     /**
      * @var array Settings array for insert
@@ -84,6 +85,17 @@ abstract class SettingsMigration extends Migration
      *       self::FIELD_TYPE => Setting::TYPE_CHECKBOX,
      *       self::FIELD_RULES => [
      *           ['integer'],
+     *       ]
+     *    ],
+     *    [
+     *       self::FIELD_SECTION => 'general',
+     *       self::FIELD_KEY => 'file_setting',
+     *       self::FIELD_NAME => 'File setting',
+     *       self::FIELD_HINT => 'File setting with uploading a file',
+     *       self::FIELD_VALUE => '',
+     *       self::FIELD_TYPE => Setting::TYPE_FILE,
+     *       self::FIELD_RULES => [
+     *           ['file'],
      *       ]
      *    ],
      * ];
