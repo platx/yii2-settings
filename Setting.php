@@ -167,16 +167,19 @@ class Setting extends ActiveRecord
         if (!empty($this->_value) && !($this->_value instanceof UploadedFile)) {
             throw new InvalidValueException("Setting {$this->section}.{$this->key} must be a file!");
         }
-        $fileName = "{$this->section}_{$this->key}_" . uniqid() . '.' . $this->_value->extension;
 
-        $url = "/uploads/settings/{$fileName}";
-        $path = Yii::getAlias("@frontend/web{$url}");
+        if($this->_value instanceof UploadedFile) {
+            $fileName = "{$this->section}_{$this->key}_" . uniqid() . '.' . $this->_value->extension;
 
-        if (is_string($path) && FileHelper::createDirectory(dirname($path))) {
-            if ($this->_value instanceof UploadedFile) {
-                if ($this->_value->saveAs($path, true)) {
-                    $this->value = $url;
-                    unset($this->_value);
+            $url = "/uploads/settings/{$fileName}";
+            $path = Yii::getAlias("@frontend/web{$url}");
+
+            if (is_string($path) && FileHelper::createDirectory(dirname($path))) {
+                if ($this->_value instanceof UploadedFile) {
+                    if ($this->_value->saveAs($path, true)) {
+                        $this->value = $url;
+                        unset($this->_value);
+                    }
                 }
             }
         }
