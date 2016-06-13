@@ -164,7 +164,7 @@ class Setting extends ActiveRecord
      */
     protected function _uploadFile()
     {
-        if (!($this->_value instanceof UploadedFile)) {
+        if (!empty($this->_value) && !($this->_value instanceof UploadedFile)) {
             throw new InvalidValueException("Setting {$this->section}.{$this->key} must be a file!");
         }
         $fileName = "{$this->section}_{$this->key}_" . uniqid() . '.' . $this->_value->extension;
