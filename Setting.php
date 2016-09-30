@@ -42,11 +42,6 @@ class Setting extends ActiveRecord
     const TYPE_FILE = 8;
 
     /**
-     * @var
-     */
-    public $file_value;
-
-    /**
      * Cache key for saving settings in cache
      * @var string
      */
@@ -72,7 +67,6 @@ class Setting extends ActiveRecord
     {
         $rules = [
             [['value'], 'string'],
-            [['file_value'], 'file'],
         ];
 
         if ($this->isNewRecord) {
@@ -92,7 +86,7 @@ class Setting extends ActiveRecord
 
     public function beforeValidate()
     {
-        if ($this->type_key == self::TYPE_FILE && $file = UploadedFile::getInstance(new SettingForm(), 'file_' . $this->key)) {
+        if ($this->type_key == self::TYPE_FILE && $file = UploadedFile::getInstance(new SettingForm(), $this->key)) {
             $this->_value = $file;
         }
 
@@ -187,8 +181,6 @@ class Setting extends ActiveRecord
                         unset($this->_value);
                     }
                 }
-            } else {
-                $this->value = null;
             }
         }
     }

@@ -130,19 +130,8 @@ class SettingForm extends Model
      */
     public function __set($key, $value)
     {
-        $isFile = false;
-
-        if (strpos($key, 'file_')) {
-            $isFile = true;
-            $key = str_replace('file_', '', $key);
-        }
-
         if (!empty($this->_settingModels[$key])) {
-            if ($isFile) {
-                $this->_settingModels[$key]->file = $value;
-            } else {
-                $this->_settingModels[$key]->value = $value;
-            }
+            $this->_settingModels[$key]->value = $value;
         }
     }
 
