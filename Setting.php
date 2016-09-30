@@ -181,6 +181,8 @@ class Setting extends ActiveRecord
                         unset($this->_value);
                     }
                 }
+            } else {
+                $this->value = null;
             }
         }
     }
